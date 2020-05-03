@@ -4,8 +4,9 @@
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
 [![Total Downloads](https://img.shields.io/packagist/dt/happyr/bref-hook-handler.svg?style=flat-square)](https://packagist.org/packages/happyr/bref-hook-handler)
 
-Do you want to make sure the new version of your lambda application is actually
-working before directing traffic? This package is here to help.
+This small library helps you to make sure the new version of your lambda application
+is actually working before you directing traffic it. It makes it simple to run a
+"PreTrafficHook".
 
 ## Install
 
@@ -13,7 +14,8 @@ working before directing traffic? This package is here to help.
 composer require happyr/bref-hook-handler
 ```
 
-We also need `serverless-plugin-canary-deployments` from [davidgf](https://github.com/davidgf/serverless-plugin-canary-deployments)
+We also need `serverless-plugin-canary-deployments` from
+[davidgf](https://github.com/davidgf/serverless-plugin-canary-deployments):
 
 ```
 npm i --save-dev serverless-plugin-canary-deployments
@@ -25,7 +27,7 @@ The idea is to create a new lambda function that can verify that everything is
 working. When we are sure all things are green, we will signal CodeDeploy to allow
 real traffic.
 
-### Modify serverless.yml
+### Example serverless.yml
 
 ```yaml
 service: canary-example
@@ -82,7 +84,7 @@ functions:
         - ${bref:layer.php-74}
 ```
 
-### Create prehook.php
+### Example prehook.php
 
 The prehook script is where you start your application kernel, test writing to
 the database, dispatch a message on the queue etc etc. If you use the `HookHandler`
@@ -102,12 +104,12 @@ return new class extends HookHandler {
     protected function validateDeployment(): bool
     {
         return
-            $this->verifyKernelBookt() &&
-            $this->verifyStartpage() &&
+            $this->verifyKernelBoot() &&
+            $this->verifyHomepage() &&
             $this->verifyDatabaseConnection();
     }
 
-    private function verifyStartpage(): bool
+    private function verifyHomepage(): bool
     {
         $functionName = getenv('HOOK_VERIFY_FUNCTION_NAME');
         $client = new ApiGatewayFaker($functionName);
@@ -118,15 +120,15 @@ return new class extends HookHandler {
             return false;
         }
 
-        // Check if the startpage contains string
-        if (false === strpos($payload['body'], 'Welcome to the startpage')) {
+        // Check if the page contains string
+        if (false === strpos($payload['body'], 'Welcome to our site')) {
             return false;
         }
 
         return true;
     }
 
-    private function verifyKernelBookt(): bool
+    private function verifyKernelBoot(): bool
     {
         // This will throw exception if failed.
         $kernel = new \App\Kernel('prod', false);
@@ -146,17 +148,18 @@ return new class extends HookHandler {
 
 ### Making HTTP requests
 
-In the example above we are making a HTTP request to our startpage. We cannot use
+In the example above we are making a HTTP request to our homepage. We cannot use
 API Gateway because it does not route traffic to the new Lambda version. So we invoke
-the lambda version directly with parameter that looks like it comes from ApiGateway.
+the lambda version directly with parameters that look like it comes from ApiGateway.
 The `ApiGatewayFaker` helps us with that.
 
-This is the only reason why we need the IAM role to lambda:InvokeFunction.
+This is the only reason why we need to configure `lambda:InvokeFunction` in the
+IAM Role.
 
-### Notes
+### Note
 
-If the prehook.php does not ping CodeDeploy then the deployment will stuck at
-"Checking Stack update progress". This is a good thing. This ensures that the prehook
-script always reports "Succeeded".
+If the prehook.php does not make a request to CodeDeploy then the deployment will
+hey stuck at "Checking Stack update progress". This is a good thing. This ensures
+that the prehook script always reports "Succeeded".
 
 Check the CloudWatch logs if this happens.
