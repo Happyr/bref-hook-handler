@@ -163,3 +163,9 @@ hey stuck at "Checking Stack update progress". This is a good thing. This ensure
 that the prehook script always reports "Succeeded".
 
 Check the CloudWatch logs if this happens.
+
+## Cool, lets to canary deployments!
+
+It is tempting to change the `deploymentSettings.type` to something else but "AllAtOnce"
+to expose your new version to 10% of the requests first... But it might not be optimal.
+Consider reading this article first: https://lumigo.io/blog/canary-deployment-for-aws-lambda/
