@@ -1,6 +1,6 @@
 <?php
 
-namespace Happyr\BredHookHandler;
+namespace Happyr\BrefHookHandler;
 
 use AsyncAws\CodeDeploy\CodeDeployClient;
 use Bref\Context\Context;
@@ -41,5 +41,4 @@ abstract class HookHandler implements Handler
             $this->codeDeploy->putLifecycleEventHookExecutionStatus($input);
         }
     }
-
 }

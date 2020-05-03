@@ -24,12 +24,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Happyr\\BredHookHandler\\": "src/"
+            "Happyr\\BrefHookHandler\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\Happyr\\BredHookHandler\\": "tests/"
+            "Tests\\Happyr\\BrefHookHandler\\": "tests/"
         }
     }
 }

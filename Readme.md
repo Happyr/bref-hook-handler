@@ -95,8 +95,8 @@ One can of course add as much or little logic as one need.
 
 require dirname(__DIR__).'/vendor/autoload.php';
 
-use Happyr\BredHookHandler\HookHandler;
-use Happyr\BredHookHandler\ApiGatewayFaker;
+use Happyr\BrefHookHandler\HookHandler;
+use Happyr\BrefHookHandler\ApiGatewayFaker;
 
 return new class extends HookHandler {
     protected function validateDeployment(): bool

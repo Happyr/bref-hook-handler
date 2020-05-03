@@ -2,15 +2,14 @@
 
 declare(strict_types=1);
 
-
-namespace Happyr\BredHookHandler;
+namespace Happyr\BrefHookHandler;
 
 use AsyncAws\Lambda\LambdaClient;
 use Bref\Lambda\InvocationFailed;
 use Bref\Lambda\InvocationResult;
 
 /**
- * Invoke Lambda in a way it looks like it came from API Gateway
+ * Invoke Lambda in a way it looks like it came from API Gateway.
  *
  * @author Tobias Nyholm <tobias.nyholm@gmail.com>
  */
@@ -34,24 +33,24 @@ class ApiGatewayFaker
         $urlParts = parse_url($url);
         $schema = $urlParts['scheme'] ?? 'https';
         $defaultHeaders = [
-            "Accept" => "*/*",
-            "Cache-Control" => "no-cache",
-            "Host" => $urlParts['host'] ?? "example.org",
-            "User-Agent" => "Lambda/Hook",
-            "X-Forwarded-For" => "1.1.1.1",
-            "X-Forwarded-Port" => $schema === 'https' ? '443' : '80',
-            "X-Forwarded-Proto" => $schema
+            'Accept' => '*/*',
+            'Cache-Control' => 'no-cache',
+            'Host' => $urlParts['host'] ?? 'example.org',
+            'User-Agent' => 'Lambda/Hook',
+            'X-Forwarded-For' => '1.1.1.1',
+            'X-Forwarded-Port' => 'https' === $schema ? '443' : '80',
+            'X-Forwarded-Proto' => $schema,
         ];
         $headers = array_merge($defaultHeaders, $headers);
 
         $payload = [
-            "path"=> $urlParts['path'] ?? '/',
-            "httpMethod"=> $method,
-            "headers"=> $headers,
-            "queryStringParameters"=> $urlParts['query'] ?? null,
-            "requestContext"=> $context,
-            "body"=> $body,
-            "isBase64Encoded"=> false
+            'path' => $urlParts['path'] ?? '/',
+            'httpMethod' => $method,
+            'headers' => $headers,
+            'queryStringParameters' => $urlParts['query'] ?? null,
+            'requestContext' => $context,
+            'body' => $body,
+            'isBase64Encoded' => false,
         ];
 
         $response = $this->lambda->invoke([
