@@ -6,6 +6,9 @@ use AsyncAws\CodeDeploy\CodeDeployClient;
 use Bref\Context\Context;
 use Bref\Event\Handler;
 
+/**
+ * @author Tobias Nyholm <tobias.nyholm@gmail.com>
+ */
 abstract class HookHandler implements Handler
 {
     /**

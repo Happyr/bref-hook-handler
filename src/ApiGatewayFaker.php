@@ -11,6 +11,8 @@ use Bref\Lambda\InvocationResult;
 
 /**
  * Invoke Lambda in a way it looks like it came from API Gateway
+ *
+ * @author Tobias Nyholm <tobias.nyholm@gmail.com>
  */
 class ApiGatewayFaker
 {
@@ -52,16 +54,16 @@ class ApiGatewayFaker
             "isBase64Encoded"=> false
         ];
 
-        $rawResult = $this->lambda->invoke([
+        $response = $this->lambda->invoke([
             'FunctionName' => $this->functionName,
             'LogType' => 'Tail',
             'Payload' => json_encode($payload),
         ]);
 
-        $resultPayload = json_decode($rawResult->getPayload(), true);
-        $invocationResult = new InvocationResult($rawResult, $resultPayload);
+        $resultPayload = json_decode($response->getPayload(), true);
+        $invocationResult = new InvocationResult($response, $resultPayload);
 
-        $error = $rawResult->getFunctionError();
+        $error = $response->getFunctionError();
         if ($error) {
             throw new InvocationFailed($invocationResult);
         }

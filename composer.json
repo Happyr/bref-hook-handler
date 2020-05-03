@@ -1,7 +1,7 @@
 {
     "name": "happyr/bref-hook-handler",
-    "description": "Simple way to handle Bref Lambda hooks",
     "type": "library",
+    "description": "Simple way to handle Bref Lambda hooks",
     "license": "MIT",
     "authors": [
         {
@@ -12,11 +12,15 @@
     "require": {
         "php": "^7.3",
         "ext-json": "*",
-        "bref/bref": "^0.5.20",
-        "async-aws/code-deploy": "dev-master"
+        "async-aws/code-deploy": "dev-master",
+        "async-aws/lambda": "^0.4.0",
+        "bref/bref": "^0.5.20"
     },
     "require-dev": {
         "symfony/phpunit-bridge": "^4.4 || ^5.0"
+    },
+    "config": {
+        "sort-packages": true
     },
     "autoload": {
         "psr-4": {
