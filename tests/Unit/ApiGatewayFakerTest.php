@@ -26,7 +26,7 @@ class ApiGatewayFakerTest extends TestCase
             $this->assertEquals('123', $data['headers']['abc']);
             $this->assertEquals($context, $data['requestContext']);
         };
-        $faker = new ApiGatewayFaker('foo', $this->getLambda($callback));
+        $faker = new ApiGatewayFaker('foo', '', $this->getLambda($callback));
         $faker->request('POST', '/start', ['User-Agent' => 'foobar', 'abc' => '123'], 'body-string', $context);
     }
 
@@ -42,8 +42,30 @@ class ApiGatewayFakerTest extends TestCase
             $this->assertEquals('https', $data['headers']['X-Forwarded-Proto']);
             $this->assertEquals('443', $data['headers']['X-Forwarded-Port']);
         };
-        $faker = new ApiGatewayFaker('foo', $this->getLambda($callback));
+        $faker = new ApiGatewayFaker('foo', '', $this->getLambda($callback));
         $faker->request('GET', 'https://foo.com/bar/biz?ab=2&cd=ef');
+    }
+
+    public function testBaseUrl()
+    {
+        $callback = function (string $payload) {
+            $data = json_decode($payload, true);
+            $this->assertEquals('/bar/biz', $data['path']);
+            $this->assertEquals('foo.com', $data['headers']['Host']);
+            $this->assertEquals('https', $data['headers']['X-Forwarded-Proto']);
+        };
+        $faker = new ApiGatewayFaker('foo', 'https://foo.com', $this->getLambda($callback));
+        $faker->request('GET', '/bar/biz');
+
+        // test a base path
+        $callback = function (string $payload) {
+            $data = json_decode($payload, true);
+            $this->assertEquals('/bar/biz', $data['path']);
+            $this->assertEquals('foo.com', $data['headers']['Host']);
+            $this->assertEquals('http', $data['headers']['X-Forwarded-Proto']);
+        };
+        $faker = new ApiGatewayFaker('foo', 'http://foo.com/bar', $this->getLambda($callback));
+        $faker->request('GET', '/biz');
     }
 
     private function getLambda(callable $callback)

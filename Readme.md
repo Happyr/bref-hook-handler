@@ -98,49 +98,27 @@ One can of course add as much or little logic as one need.
 
 require dirname(__DIR__).'/vendor/autoload.php';
 
-use Happyr\BrefHookHandler\HookHandler;
 use Happyr\BrefHookHandler\ApiGatewayFaker;
+use Happyr\BrefHookHandler\HookHandler;
 
-return new class extends HookHandler {
+return new class($apiGateway) extends HookHandler {
+
     protected function validateDeployment(): bool
-    {
-        return
-            $this->verifyKernelBoot() &&
-            $this->verifyHomepage() &&
-            $this->verifyDatabaseConnection();
-    }
-
-    private function verifyHomepage(): bool
-    {
-        $functionName = getenv('HOOK_VERIFY_FUNCTION_NAME');
-        $client = new ApiGatewayFaker($functionName);
-        $response = $client->request('GET', '/');
-        $payload = $response->getPayload();
-
-        if ($payload['statusCode'] !== 200) {
-            return false;
-        }
-
-        // Check if the page contains string
-        if (false === strpos($payload['body'], 'Welcome to our site')) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private function verifyKernelBoot(): bool
     {
         // This will throw exception if failed.
         $kernel = new \App\Kernel('prod', false);
         $kernel->boot();
 
-        return true;
+        return $this->verifyHomepage();
     }
 
-    private function verifyDatabaseConnection(): bool
+    private function verifyHomepage(): bool
     {
-        // any custom logic
+        $apiGateway = new ApiGatewayFaker(\getenv('HOOK_VERIFY_FUNCTION_NAME'));
+        $response = $apiGateway->request('GET', '/');
+
+        $response->assertStatusCode(200);
+        $response->assertBodyContains('Welcome to our site');
 
         return true;
     }

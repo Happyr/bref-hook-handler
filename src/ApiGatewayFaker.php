@@ -18,41 +18,26 @@ class ApiGatewayFaker
     /** @var LambdaClient */
     private $lambda;
     private $functionName;
+    private $baseUri;
 
-    public function __construct(string $functionName, ?LambdaClient $lambdaClient = null)
+    public function __construct(string $functionName, ?string $baseUri = null, ?LambdaClient $lambdaClient = null)
     {
         $this->functionName = $functionName;
         $this->lambda = $lambdaClient ?? new LambdaClient();
+        $this->baseUri = [];
+        if (null !== $baseUri) {
+            $this->baseUri = parse_url($baseUri);
+            if (!is_array($this->baseUri)) {
+                throw new \RuntimeException(sprintf('Could not parse baseUri "%s"', $baseUri));
+            }
+        }
     }
 
     /**
      * @throws InvocationFailed
      */
-    public function request(string $method, string $url, array $headers = [], string $body = '', array $context = []): InvocationResult
+    public function invoke(array $payload): InvocationResult
     {
-        $urlParts = parse_url($url);
-        $schema = $urlParts['scheme'] ?? 'https';
-        $defaultHeaders = [
-            'Accept' => '*/*',
-            'Cache-Control' => 'no-cache',
-            'Host' => $urlParts['host'] ?? 'example.org',
-            'User-Agent' => 'Lambda/Hook',
-            'X-Forwarded-For' => '1.1.1.1',
-            'X-Forwarded-Port' => 'https' === $schema ? '443' : '80',
-            'X-Forwarded-Proto' => $schema,
-        ];
-        $headers = array_merge($defaultHeaders, $headers);
-
-        $payload = [
-            'path' => $urlParts['path'] ?? '/',
-            'httpMethod' => $method,
-            'headers' => $headers,
-            'queryStringParameters' => $urlParts['query'] ?? null,
-            'requestContext' => $context,
-            'body' => $body,
-            'isBase64Encoded' => false,
-        ];
-
         $response = $this->lambda->invoke([
             'FunctionName' => $this->functionName,
             'LogType' => 'Tail',
@@ -68,5 +53,39 @@ class ApiGatewayFaker
         }
 
         return $invocationResult;
+    }
+
+    /**
+     * @throws InvocationFailed
+     */
+    public function request(string $method, string $url, array $headers = [], string $body = '', array $context = []): ApiGatewayResponse
+    {
+        $urlParts = parse_url($url);
+        $schema = $urlParts['scheme'] ?? ($this->baseUri['scheme'] ?? 'https');
+        $host = $urlParts['host'] ?? ($this->baseUri['host'] ?? 'example.org');
+        $path = ($this->baseUri['path'] ?? '').$urlParts['path'] ?? '/';
+
+        $defaultHeaders = [
+            'Accept' => '*/*',
+            'Cache-Control' => 'no-cache',
+            'Host' => $host,
+            'User-Agent' => 'Lambda/Hook',
+            'X-Forwarded-For' => '1.1.1.1',
+            'X-Forwarded-Port' => 'https' === $schema ? '443' : '80',
+            'X-Forwarded-Proto' => $schema,
+        ];
+        $headers = array_merge($defaultHeaders, $headers);
+
+        $payload = [
+            'path' => $path,
+            'httpMethod' => $method,
+            'headers' => $headers,
+            'queryStringParameters' => $urlParts['query'] ?? null,
+            'requestContext' => $context,
+            'body' => $body,
+            'isBase64Encoded' => false,
+        ];
+
+        return new ApiGatewayResponse($this->invoke($payload), sprintf('%s://%s%s', $schema, $host, $path));
     }
 }
