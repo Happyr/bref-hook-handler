@@ -105,21 +105,17 @@ return new class($apiGateway) extends HookHandler {
 
     protected function validateDeployment(): bool
     {
-        // This will throw exception if failed.
-        $kernel = new \App\Kernel('prod', false);
-        $kernel->boot();
-
-        return $this->verifyHomepage();
-    }
-
-    private function verifyHomepage(): bool
-    {
         $apiGateway = new ApiGatewayFaker(\getenv('HOOK_VERIFY_FUNCTION_NAME'));
         $response = $apiGateway->request('GET', '/');
-
         $response->assertStatusCode(200);
         $response->assertBodyContains('Welcome to our site');
 
+        $kernel = new \App\Kernel('prod', false);
+        $kernel->boot();
+        $kernel->getContainer()->get(CacheAccessChecker::class)->verify();
+
+        // If no exceptions were thrown and we return true, then we will
+        // signal CodeDeploy to allow traffic
         return true;
     }
 };
