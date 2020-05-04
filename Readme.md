@@ -31,6 +31,7 @@ real traffic.
 
 ```yaml
 service: canary-example
+frameworkVersion: ">=1.69.0 <2.0.0"
 
 # Bref and canary plugins
 plugins:

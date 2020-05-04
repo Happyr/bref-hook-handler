@@ -12,13 +12,13 @@ use Bref\Event\Handler;
 abstract class HookHandler implements Handler
 {
     /**
-     * @var CodeDeployClient
+     * @var CodeDeployClient|null
      */
     private $codeDeploy;
 
     public function __construct(?CodeDeployClient $codeDeploy = null)
     {
-        $this->codeDeploy = $codeDeploy ?? new CodeDeployClient();
+        $this->codeDeploy = $codeDeploy;
     }
 
     abstract protected function validateDeployment(): bool;
@@ -38,7 +38,12 @@ abstract class HookHandler implements Handler
                 'status' => $valid ? 'Succeeded' : 'Failed',
             ];
 
-            $this->codeDeploy->putLifecycleEventHookExecutionStatus($input);
+            $this->getCodeDeploy()->putLifecycleEventHookExecutionStatus($input);
         }
+    }
+
+    private function getCodeDeploy(): CodeDeployClient
+    {
+        return $this->codeDeploy ?? $this->codeDeploy = new CodeDeployClient();
     }
 }
