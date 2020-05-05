@@ -81,8 +81,9 @@ functions:
   preHook:
     handler: prehook.php
     description: 'To verify deployment before allowing traffic'
+    timeout: 10
     layers:
-        - ${bref:layer.php-74}
+      - ${bref:layer.php-74}
 ```
 
 ### Example prehook.php
