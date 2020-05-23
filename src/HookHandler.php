@@ -25,6 +25,7 @@ abstract class HookHandler implements Handler
 
     public function handle($event, Context $context)
     {
+        echo 'DeploymentId: '.$event['DeploymentId']."\n";
         try {
             $valid = $this->validateDeployment();
         } catch (\Throwable $e) {

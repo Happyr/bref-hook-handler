@@ -102,7 +102,7 @@ require dirname(__DIR__).'/vendor/autoload.php';
 use Happyr\BrefHookHandler\ApiGatewayFaker;
 use Happyr\BrefHookHandler\HookHandler;
 
-return new class($apiGateway) extends HookHandler {
+return new class extends HookHandler {
 
     protected function validateDeployment(): bool
     {

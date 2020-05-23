@@ -64,6 +64,10 @@ class ApiGatewayFaker
         $schema = $urlParts['scheme'] ?? ($this->baseUri['scheme'] ?? 'https');
         $host = $urlParts['host'] ?? ($this->baseUri['host'] ?? 'example.org');
         $path = ($this->baseUri['path'] ?? '').$urlParts['path'] ?? '/';
+        $query = [];
+        if (isset($urlParts['query'])) {
+            parse_str($urlParts['query'], $query);
+        }
 
         $defaultHeaders = [
             'Accept' => '*/*',
@@ -80,7 +84,7 @@ class ApiGatewayFaker
             'path' => $path,
             'httpMethod' => $method,
             'headers' => $headers,
-            'queryStringParameters' => $urlParts['query'] ?? null,
+            'queryStringParameters' => $query,
             'requestContext' => $context,
             'body' => $body,
             'isBase64Encoded' => false,

@@ -36,7 +36,7 @@ class ApiGatewayFakerTest extends TestCase
             $data = json_decode($payload, true);
             $this->assertEquals('GET', $data['httpMethod']);
             $this->assertEquals('/bar/biz', $data['path']);
-            $this->assertEquals('ab=2&cd=ef', $data['queryStringParameters']);
+            $this->assertEquals(['ab' => '2', 'cd' => 'ef'], $data['queryStringParameters']);
             $this->assertEquals('', $data['body']);
             $this->assertEquals('foo.com', $data['headers']['Host']);
             $this->assertEquals('https', $data['headers']['X-Forwarded-Proto']);
