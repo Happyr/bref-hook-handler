@@ -1,5 +1,11 @@
 # Change log
 
+## 0.2.1
+
+### Fixed
+
+- Support for query parameters
+
 ## 0.2.0
 
 ### Added
