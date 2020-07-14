@@ -13,7 +13,7 @@
         "php": "^7.3",
         "ext-json": "*",
         "async-aws/code-deploy": "^0.1 || ^0.2",
-        "async-aws/lambda": "^0.4 || ^0.5",
+        "async-aws/lambda": "^0.4 || ^0.5 || ^1.0",
         "bref/bref": "^0.5.20"
     },
     "require-dev": {
