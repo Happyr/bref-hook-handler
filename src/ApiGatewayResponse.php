@@ -63,7 +63,7 @@ class ApiGatewayResponse
     public function assertStatusCode(int $expected)
     {
         if ($expected !== $this->payload['statusCode']) {
-            throw AssertionFailed::create('URL "%s" did not response with HTTP status code "%d"', $this->url, $expected);
+            throw AssertionFailed::create('URL "%s" did not response with HTTP status code "%d". We got "%d"', $this->url, $expected, $this->payload['statusCode']);
         }
     }
 
