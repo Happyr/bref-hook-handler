@@ -4,6 +4,14 @@
 
 ### Added
 
+- PHP8 support
+- Function to run Symfony commands
+- Better exception messages
+
+## 0.2.4
+
+### Added
+
 - Support for async-aws/code-deploy: 1.0
 
 ## 0.2.3
