@@ -5,6 +5,11 @@ namespace Happyr\BrefHookHandler;
 use AsyncAws\CodeDeploy\CodeDeployClient;
 use Bref\Context\Context;
 use Bref\Event\Handler;
+use Happyr\BrefHookHandler\Exception\AssertionFailed;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\NullOutput;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
  * @author Tobias Nyholm <tobias.nyholm@gmail.com>
@@ -40,6 +45,19 @@ abstract class HookHandler implements Handler
             ];
 
             $this->getCodeDeploy()->putLifecycleEventHookExecutionStatus($input);
+        }
+    }
+
+    protected function executeCommand(KernelInterface $kernel, ArrayInput $input): void
+    {
+        $application = new Application($kernel);
+        $application->setAutoExit(false);
+        $application->setCatchExceptions(false);
+
+        $exit = $application->run($input, new NullOutput());
+
+        if (0 !== $exit) {
+            throw AssertionFailed::create('Command "%s" exited with status code: %d', $input->getFirstArgument(), $exit);
         }
     }
 
