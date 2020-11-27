@@ -14,7 +14,7 @@
         "ext-json": "*",
         "async-aws/code-deploy": "^1.0",
         "async-aws/lambda": "^1.0",
-        "bref/bref": "^0.5.20"
+        "bref/bref": "^0.5.20 || ^1.0"
     },
     "require-dev": {
         "symfony/phpunit-bridge": "^4.4 || ^5.0",

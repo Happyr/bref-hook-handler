@@ -1,6 +1,12 @@
 # Change log
 
-## 0.2.4
+## 0.2.6
+
+### Added
+
+- Support for Bref 1.0
+
+## 0.2.5
 
 ### Added
 
